@@ -41,51 +41,6 @@ type Kpi = {
     deltaType: DeltaType;
 };
 
-const kpiDataFirstLine: Kpi[] = [
-    {
-        title: 'CAPITAL ESPÉRÉ À 67 ANS',
-        metric: '12 699€',
-        progress: 15.9,
-        target: '$ 80,000',
-        delta: '13.2%',
-        deltaType: 'moderateIncrease',
-    },
-    {
-        title: 'SOIT UN REVENU COMPLÉMENTAIRE DE',
-        metric: '594€ / mois',
-        progress: 36.5,
-        target: '$ 125,000',
-        delta: '23.9%',
-        deltaType: 'increase',
-    },
-];
-const kpiDataSecondLine: Kpi[] = [
-    {
-        title: 'VERSEMENTS TOTAUX',
-        metric: '120 500€',
-        progress: 53.6,
-        target: '2,000',
-        delta: '10.1%',
-        deltaType: 'moderateDecrease',
-    },
-    {
-        title: 'INTÉRÊTS COMPOSÉS',
-        metric: '22 110€',
-        progress: 53.6,
-        target: '2,000',
-        delta: '10.1%',
-        deltaType: 'moderateDecrease',
-    },
-    {
-        title: 'PERFORMANCE ESPÉRÉE',
-        metric: '3,2% / an',
-        progress: 53.6,
-        target: '2,000',
-        delta: '10.1%',
-        deltaType: 'moderateDecrease',
-    },
-];
-
 import { useState } from 'react';
 
 const usNumberformatter = (number: number, decimals = 0) =>
@@ -209,7 +164,19 @@ const deltaTypes: { [key: string]: DeltaType } = {
     underperforming: 'moderateDecrease',
 };
 
-export default function Dashboard() {
+export default function Dashboard({
+    totalInvestment,
+    composedInterest,
+    possibleCapital,
+    monthlyRetirement,
+    goal,
+}: {
+    totalInvestment: number;
+    composedInterest: number;
+    possibleCapital: number;
+    monthlyRetirement: number;
+    goal: number;
+}) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
     const [selectedStatus, setSelectedStatus] = useState('all');
@@ -218,6 +185,51 @@ export default function Dashboard() {
     const isSalesPersonSelected = (salesPerson: SalesPerson) =>
         (salesPerson.status === selectedStatus || selectedStatus === 'all') &&
         (selectedNames.includes(salesPerson.name) || selectedNames.length === 0);
+
+    const kpiDataFirstLine: Kpi[] = [
+        {
+            title: 'CAPITAL ESPÉRÉ À 67 ANS',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(possibleCapital)}`,
+            progress: ((possibleCapital / goal) * 100).toFixed(1) as unknown as number,
+            target: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(goal)}`,
+            delta: '10.1%',
+            deltaType: 'moderateIncrease',
+        },
+        {
+            title: 'SOIT UN REVENU COMPLÉMENTAIRE DE',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(monthlyRetirement)} / mois`,
+            progress: 36.5,
+            target: '$ 125,000',
+            delta: '23.9%',
+            deltaType: 'increase',
+        },
+    ];
+    const kpiDataSecondLine: Kpi[] = [
+        {
+            title: 'VERSEMENTS TOTAUX',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalInvestment)}`,
+            progress: 53.6,
+            target: '2,000',
+            delta: '10.1%',
+            deltaType: 'moderateDecrease',
+        },
+        {
+            title: 'INTÉRÊTS COMPOSÉS',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(Number(composedInterest.toFixed(0)))}`,
+            progress: 53.6,
+            target: '2,000',
+            delta: '10.1%',
+            deltaType: 'moderateDecrease',
+        },
+        {
+            title: 'PERFORMANCE ESPÉRÉE',
+            metric: '3% / an',
+            progress: 53.6,
+            target: '2,000',
+            delta: '10.1%',
+            deltaType: 'moderateDecrease',
+        },
+    ];
 
     const areaChartArgs = {
         className: 'mt-5 h-72',
