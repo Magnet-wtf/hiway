@@ -22,17 +22,26 @@ export function Simulator() {
     const [freelanceRevenue, setFreelanceRevenue] = useState(0);
     const [conjointRevenue, setConjointRevenue] = useState(0);
 
-    const [interest, setInterest] = useState(3);
+    const [interest, setInterest] = useState(5.1);
 
     const lifeExpectancy = 79.3;
     const yearsofInvestment = 67 - age[0];
-    const totalInvestment = monthlyPayment[0] * 12 * yearsofInvestment;
-    const totalInvestmentWithInterest = totalInvestment * (1 + interest / 100) ** yearsofInvestment;
-    const totalInterest = totalInvestmentWithInterest - totalInvestment;
+    const monthlyInvestment = monthlyPayment[0] * 12;
+    const totalInvestment = monthlyInvestment * yearsofInvestment + firstPayment[0];
+    const interestRate = interest / 100; // converting percentage to a decimal
 
-    const composedInterest = (totalInvestmentWithInterest * 0.1) / 2;
-    const possibleCapitalAt67 = totalInvestmentWithInterest + composedInterest + firstPayment[0];
-    const monthlyRetirement = possibleCapitalAt67 / (lifeExpectancy - 67) / 12;
+    const monthlyInterestRate = interest / 100 / 12; // Monthly interest rate
+    const totalPeriods = yearsofInvestment * 12; // Total number of months
+
+    const futureValueOfInitialInvestment = firstPayment[0] * Math.pow(1 + monthlyInterestRate, totalPeriods);
+    const futureValueOfSeries = (monthlyPayment[0] * (Math.pow(1 + monthlyInterestRate, totalPeriods) - 1)) / monthlyInterestRate;
+
+    const totalInvestmentWithInterest = futureValueOfInitialInvestment + futureValueOfSeries;
+    const compoundedInterestValue = totalInvestmentWithInterest - (firstPayment[0] + totalInvestment);
+
+    const possibleCapitalAt67 = totalInvestmentWithInterest + firstPayment[0];
+    const monthsOfRetirement = (lifeExpectancy - 67) * 12; // converting years to months
+    const monthlyRetirement = possibleCapitalAt67 / monthsOfRetirement;
 
     const calculateQuotientFamilial = () => {
         if (situation === 'celibataire') {
@@ -237,11 +246,12 @@ export function Simulator() {
                 <CardContent>
                     <Dashboard
                         totalInvestment={totalInvestment}
-                        composedInterest={composedInterest}
+                        composedInterest={compoundedInterestValue}
                         possibleCapital={possibleCapitalAt67}
                         monthlyRetirement={monthlyRetirement}
                         goal={goal[0]}
                         yearsofInvestment={yearsofInvestment}
+                        firstPayment={firstPayment[0]}
                     />
                 </CardContent>
             </Card>

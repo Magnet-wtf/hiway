@@ -44,16 +44,11 @@ type Kpi = {
 import { useState } from 'react';
 
 const usNumberformatter = (number: number, decimals = 0) =>
-    Intl.NumberFormat('de-DE', {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-    })
-        .format(Number(number))
-        .toString();
+    Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number).toString();
 
 const formatters: { [key: string]: any } = {
-    totalInvestment: (number: number) => `$ ${usNumberformatter(number)}`,
-    composedInterest: (number: number) => `$ ${usNumberformatter(number)}`,
+    TotalInvestment: (number: number) => `$ ${usNumberformatter(number)}`,
+    ComposedInterest: (number: number) => `$ ${usNumberformatter(number)}`,
 };
 
 const Kpis = {
@@ -65,8 +60,8 @@ const kpiList = [Kpis.TotalInvestment, Kpis.ComposedInterest];
 
 export type DailyPerformance = {
     date: string;
-    totalInvestment: number;
-    composedInterest: number;
+    TotalInvestment: number;
+    ComposedInterest: number;
 };
 
 export type SalesPerson = {
@@ -140,6 +135,7 @@ export default function Dashboard({
     monthlyRetirement,
     goal,
     yearsofInvestment,
+    firstPayment,
 }: {
     totalInvestment: number;
     composedInterest: number;
@@ -147,6 +143,7 @@ export default function Dashboard({
     monthlyRetirement: number;
     goal: number;
     yearsofInvestment: number;
+    firstPayment: number;
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -194,7 +191,7 @@ export default function Dashboard({
         },
         {
             title: 'PERFORMANCE ESPÉRÉE',
-            metric: '3% / an',
+            metric: '5.1% / an',
             progress: 53.6,
             target: '2,000',
             delta: '10.1%',
@@ -207,8 +204,8 @@ export default function Dashboard({
         for (let i = 0; i < yearsofInvestment; i++) {
             performance.push({
                 date: `${i + 1}`,
-                totalInvestment: (totalInvestment / yearsofInvestment) * (i + 1),
-                composedInterest: (composedInterest / yearsofInvestment) * (i + 1),
+                TotalInvestment: (totalInvestment / yearsofInvestment) * (i + 1),
+                ComposedInterest: (composedInterest / yearsofInvestment) * (i + 1),
             });
         }
         return performance;
@@ -218,10 +215,10 @@ export default function Dashboard({
         className: 'mt-5 h-72',
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
-        categories: ['totalInvestment', 'composedInterest'],
+        categories: ['TotalInvestment', 'ComposedInterest'],
         colors: ['blue', 'yellow'] as Color[],
         showLegend: false,
-        valueFormatter: formatters[selectedKpi],
+        valueFormatter: (number: number) => `$ ${usNumberformatter(number)}`,
         yAxisWidth: 60,
     };
     return (
@@ -275,7 +272,7 @@ export default function Dashboard({
                                     <div className='md:flex justify-between'>
                                         <div>
                                             <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
-                                                <Title> Performance History </Title>
+                                                <Title> Performance </Title>
                                                 <Icon
                                                     icon={InformationCircleIcon}
                                                     variant='simple'
