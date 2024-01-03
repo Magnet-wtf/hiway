@@ -82,7 +82,7 @@ export function Simulator() {
 
     return (
         <div className='w-full grid grid-cols-4 space-x-4'>
-            <div className='col-span-1 space-y-4 grid grid-cols-1 grid-rows-4'>
+            <div className='col-span-1 space-y-4 grid grid-cols-1 grid-rows-8'>
                 <Card className='col-span-1 row-span-1'>
                     <CardHeader>
                         <CardTitle className='flex'>
@@ -145,7 +145,7 @@ export function Simulator() {
                                 defaultValue={[10000000]}
                                 max={5000000}
                                 min={100000}
-                                step={1000}
+                                step={50000}
                                 value={goal}
                                 onValueChange={(value) => setGoal(value)}
                             />
@@ -241,6 +241,7 @@ export function Simulator() {
                         possibleCapital={possibleCapitalAt67}
                         monthlyRetirement={monthlyRetirement}
                         goal={goal[0]}
+                        yearsofInvestment={yearsofInvestment}
                     />
                 </CardContent>
             </Card>

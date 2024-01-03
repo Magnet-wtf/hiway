@@ -44,7 +44,7 @@ type Kpi = {
 import { useState } from 'react';
 
 const usNumberformatter = (number: number, decimals = 0) =>
-    Intl.NumberFormat('us', {
+    Intl.NumberFormat('de-DE', {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
     })
@@ -52,53 +52,22 @@ const usNumberformatter = (number: number, decimals = 0) =>
         .toString();
 
 const formatters: { [key: string]: any } = {
-    Sales: (number: number) => `$ ${usNumberformatter(number)}`,
-    Profit: (number: number) => `$ ${usNumberformatter(number)}`,
-    Customers: (number: number) => `${usNumberformatter(number)}`,
-    Delta: (number: number) => `${usNumberformatter(number, 2)}%`,
+    totalInvestment: (number: number) => `$ ${usNumberformatter(number)}`,
+    composedInterest: (number: number) => `$ ${usNumberformatter(number)}`,
 };
 
 const Kpis = {
-    Sales: 'Sales',
-    Profit: 'Profit',
-    Customers: 'Customers',
+    TotalInvestment: 'Total Investment',
+    ComposedInterest: 'Composed Interest',
 };
 
-const kpiList = [Kpis.Sales, Kpis.Profit, Kpis.Customers];
+const kpiList = [Kpis.TotalInvestment, Kpis.ComposedInterest];
 
 export type DailyPerformance = {
     date: string;
-    Sales: number;
-    Profit: number;
-    Customers: number;
+    totalInvestment: number;
+    composedInterest: number;
 };
-
-export const performance: DailyPerformance[] = [
-    {
-        date: '2023-05-01',
-        Sales: 900.73,
-        Profit: 173,
-        Customers: 73,
-    },
-    {
-        date: '2023-05-02',
-        Sales: 1000.74,
-        Profit: 174.6,
-        Customers: 74,
-    },
-    {
-        date: '2023-05-03',
-        Sales: 1100.93,
-        Profit: 293.1,
-        Customers: 293,
-    },
-    {
-        date: '2023-05-04',
-        Sales: 1200.9,
-        Profit: 290.2,
-        Customers: 29,
-    },
-];
 
 export type SalesPerson = {
     name: string;
@@ -170,12 +139,14 @@ export default function Dashboard({
     possibleCapital,
     monthlyRetirement,
     goal,
+    yearsofInvestment,
 }: {
     totalInvestment: number;
     composedInterest: number;
     possibleCapital: number;
     monthlyRetirement: number;
     goal: number;
+    yearsofInvestment: number;
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -231,12 +202,24 @@ export default function Dashboard({
         },
     ];
 
+    function buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear() {
+        const performance: DailyPerformance[] = [];
+        for (let i = 0; i < yearsofInvestment; i++) {
+            performance.push({
+                date: `${i + 1}`,
+                totalInvestment: (totalInvestment / yearsofInvestment) * (i + 1),
+                composedInterest: (composedInterest / yearsofInvestment) * (i + 1),
+            });
+        }
+        return performance;
+    }
+
     const areaChartArgs = {
         className: 'mt-5 h-72',
-        data: performance,
+        data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
-        categories: [selectedKpi],
-        colors: ['blue'] as Color[],
+        categories: ['totalInvestment', 'composedInterest'],
+        colors: ['blue', 'yellow'] as Color[],
         showLegend: false,
         valueFormatter: formatters[selectedKpi],
         yAxisWidth: 60,
@@ -299,16 +282,6 @@ export default function Dashboard({
                                                     tooltip='Shows daily increase or decrease of particular domain'
                                                 />
                                             </Flex>
-                                            <Text> Daily change per domain </Text>
-                                        </div>
-                                        <div>
-                                            <TabGroup index={selectedIndex} onIndexChange={setSelectedIndex}>
-                                                <TabList color='gray' variant='solid'>
-                                                    <Tab>Sales</Tab>
-                                                    <Tab>Profit</Tab>
-                                                    <Tab>Customers</Tab>
-                                                </TabList>
-                                            </TabGroup>
                                         </div>
                                     </div>
                                     {/* web */}
