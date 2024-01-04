@@ -39,7 +39,25 @@ export function Simulator() {
     const totalInvestmentWithInterest = futureValueOfInitialInvestment + futureValueOfSeries;
     const compoundedInterestValue = totalInvestmentWithInterest - (firstPayment[0] + totalInvestment);
 
-    const possibleCapitalAt67 = totalInvestmentWithInterest + firstPayment[0];
+    function calculateCompoundedInterestPerYear() {
+        const yearsofInvestment = 67 - age[0];
+        const monthlyInterestRate = interest / 100 / 12; // Monthly interest rate
+
+        let compoundedInterestValues = [];
+
+        for (let year = 1; year <= yearsofInvestment; year++) {
+            const periods = year * 12;
+            const futureValueOfSeries = (monthlyPayment[0] * (Math.pow(1 + monthlyInterestRate, periods) - 1)) / monthlyInterestRate;
+            const futureValueOfInitialInvestment = firstPayment[0] * Math.pow(1 + monthlyInterestRate, periods);
+            const totalInvestmentWithInterest = futureValueOfInitialInvestment + futureValueOfSeries;
+            const compoundedInterest = totalInvestmentWithInterest - (firstPayment[0] + monthlyPayment[0] * 12 * year);
+            compoundedInterestValues.push(compoundedInterest);
+        }
+
+        return compoundedInterestValues;
+    }
+
+    const possibleCapitalAt67 = totalInvestment + calculateCompoundedInterestPerYear()[calculateCompoundedInterestPerYear().length - 1];
     const monthsOfRetirement = (lifeExpectancy - 67) * 12; // converting years to months
     const monthlyRetirement = possibleCapitalAt67 / monthsOfRetirement;
 
@@ -148,13 +166,19 @@ export function Simulator() {
                         <div className='space-y-4'>
                             <div className='flex items-center justify-between w-full'>
                                 <h2>Montant</h2>
-                                <h2>{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(goal[0])}</h2>
+                                <h2>
+                                    {new Intl.NumberFormat('de-DE', {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                        maximumFractionDigits: 0,
+                                    }).format(goal[0])}
+                                </h2>
                             </div>
                             <Slider
                                 defaultValue={[10000000]}
-                                max={5000000}
+                                max={1500000}
                                 min={100000}
-                                step={50000}
+                                step={100000}
                                 value={goal}
                                 onValueChange={(value) => setGoal(value)}
                             />
@@ -213,24 +237,6 @@ export function Simulator() {
                                 />
                             </div>
 
-                            <div className='space-y-2'>
-                                <Label>Revenue freelance</Label>
-                                <Input
-                                    placeholder='Revenue freelance'
-                                    value={freelanceRevenue}
-                                    onChange={(e) => setFreelanceRevenue(Number(e.target.value))}
-                                />
-                            </div>
-
-                            <div className='space-y-2'>
-                                <Label>Revenue conjoint/e</Label>
-                                <Input
-                                    placeholder='Revenue conjoit/e'
-                                    value={conjointRevenue}
-                                    onChange={(e) => setConjointRevenue(Number(e.target.value))}
-                                />
-                            </div>
-
                             <div>Ma TMI est de: {calculTMI()}</div>
                         </div>
                     </CardContent>
@@ -252,6 +258,7 @@ export function Simulator() {
                         goal={goal[0]}
                         yearsofInvestment={yearsofInvestment}
                         firstPayment={firstPayment[0]}
+                        interestYearOverYear={calculateCompoundedInterestPerYear()}
                     />
                 </CardContent>
             </Card>

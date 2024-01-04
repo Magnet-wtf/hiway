@@ -5,6 +5,7 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import {
     AreaChart,
     BadgeDelta,
+    BarChart,
     Card,
     Color,
     DeltaType,
@@ -44,7 +45,7 @@ type Kpi = {
 import { useState } from 'react';
 
 const usNumberformatter = (number: number, decimals = 0) =>
-    Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number).toString();
+    Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(number).toString();
 
 const formatters: { [key: string]: any } = {
     TotalInvestment: (number: number) => `$ ${usNumberformatter(number)}`,
@@ -60,8 +61,8 @@ const kpiList = [Kpis.TotalInvestment, Kpis.ComposedInterest];
 
 export type DailyPerformance = {
     date: string;
-    TotalInvestment: number;
-    ComposedInterest: number;
+    'Versements cumulés': number;
+    'Intérêt cumulés': number;
 };
 
 export type SalesPerson = {
@@ -136,6 +137,7 @@ export default function Dashboard({
     goal,
     yearsofInvestment,
     firstPayment,
+    interestYearOverYear,
 }: {
     totalInvestment: number;
     composedInterest: number;
@@ -144,6 +146,7 @@ export default function Dashboard({
     goal: number;
     yearsofInvestment: number;
     firstPayment: number;
+    interestYearOverYear: number[];
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -157,15 +160,19 @@ export default function Dashboard({
     const kpiDataFirstLine: Kpi[] = [
         {
             title: 'CAPITAL ESPÉRÉ À 67 ANS',
-            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(possibleCapital)}`,
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                possibleCapital,
+            )}`,
             progress: ((possibleCapital / goal) * 100).toFixed(1) as unknown as number,
-            target: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(goal)}`,
+            target: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(goal)}`,
             delta: '10.1%',
             deltaType: 'moderateIncrease',
         },
         {
             title: 'SOIT UN REVENU COMPLÉMENTAIRE DE',
-            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(monthlyRetirement)} / mois`,
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                monthlyRetirement,
+            )} / mois`,
             progress: 36.5,
             target: '$ 125,000',
             delta: '23.9%',
@@ -175,7 +182,9 @@ export default function Dashboard({
     const kpiDataSecondLine: Kpi[] = [
         {
             title: 'VERSEMENTS TOTAUX',
-            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalInvestment)}`,
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                totalInvestment,
+            )}`,
             progress: 53.6,
             target: '2,000',
             delta: '10.1%',
@@ -183,7 +192,9 @@ export default function Dashboard({
         },
         {
             title: 'INTÉRÊTS COMPOSÉS',
-            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(Number(composedInterest.toFixed(0)))}`,
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                Number(interestYearOverYear[yearsofInvestment - 1]),
+            )}`,
             progress: 53.6,
             target: '2,000',
             delta: '10.1%',
@@ -204,65 +215,58 @@ export default function Dashboard({
         for (let i = 0; i < yearsofInvestment; i++) {
             performance.push({
                 date: `${i + 1}`,
-                TotalInvestment: (totalInvestment / yearsofInvestment) * (i + 1),
-                ComposedInterest: (composedInterest / yearsofInvestment) * (i + 1),
+                'Versements cumulés': (totalInvestment / yearsofInvestment) * (i + 1),
+                'Intérêt cumulés': interestYearOverYear[i],
             });
         }
         return performance;
     }
 
     const areaChartArgs = {
-        className: 'mt-5 h-72',
+        className: 'mt-5 h-96',
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
-        categories: ['TotalInvestment', 'ComposedInterest'],
+        categories: ['Versements cumulés', 'Intérêt cumulés'],
         colors: ['blue', 'yellow'] as Color[],
         showLegend: false,
-        valueFormatter: (number: number) => `$ ${usNumberformatter(number)}`,
-        yAxisWidth: 60,
+        valueFormatter: (number: number) => `${usNumberformatter(number)}`,
+        yAxisWidth: 120,
     };
     return (
         <main>
             <TabGroup className='mt-6'>
-                <TabList>
-                    <Tab>Overview</Tab>
-                    <Tab>Detail</Tab>
-                </TabList>
                 <TabPanels>
                     <TabPanel>
+                        <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
+                            {kpiDataFirstLine.map((item, index) => (
+                                <Card key={item.title} className='flex flex-col justify-center'>
+                                    <Flex alignItems={index === 0 ? 'start' : 'center'} justifyContent={index === 0 ? 'start' : 'center'}>
+                                        <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
+                                            <Text>{item.title}</Text>
+                                            <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                                        </div>
+                                    </Flex>
+                                    {index === 0 && (
+                                        <>
+                                            <Flex className='mt-4 space-x-2'>
+                                                <Text className='truncate'>{`${item.progress}%`}</Text>
+                                                <Text className='truncate'>{item.target}</Text>
+                                            </Flex>
+                                            <ProgressBar value={item.progress} className='mt-2' />
+                                        </>
+                                    )}
+                                </Card>
+                            ))}
+                        </Grid>
                         <Grid numItemsMd={2} numItemsLg={3} className='mt-6 gap-6'>
                             {kpiDataSecondLine.map((item) => (
                                 <Card key={item.title}>
                                     <Flex alignItems='start'>
-                                        <div className='truncate'>
+                                        <div className='truncate space-y-2'>
                                             <Text>{item.title}</Text>
-                                            <Metric className='truncate'>{item.metric}</Metric>
+                                            <Metric className='truncate text-4xl'>{item.metric}</Metric>
                                         </div>
-                                        <BadgeDelta deltaType={item.deltaType}>{item.delta}</BadgeDelta>
                                     </Flex>
-                                    <Flex className='mt-4 space-x-2'>
-                                        <Text className='truncate'>{`${item.progress}% (${item.metric})`}</Text>
-                                        <Text className='truncate'>{item.target}</Text>
-                                    </Flex>
-                                    <ProgressBar value={item.progress} className='mt-2' />
-                                </Card>
-                            ))}
-                        </Grid>
-                        <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                            {kpiDataFirstLine.map((item) => (
-                                <Card key={item.title}>
-                                    <Flex alignItems='start'>
-                                        <div className='truncate'>
-                                            <Text>{item.title}</Text>
-                                            <Metric className='truncate'>{item.metric}</Metric>
-                                        </div>
-                                        <BadgeDelta deltaType={item.deltaType}>{item.delta}</BadgeDelta>
-                                    </Flex>
-                                    <Flex className='mt-4 space-x-2'>
-                                        <Text className='truncate'>{`${item.progress}% (${item.metric})`}</Text>
-                                        <Text className='truncate'>{item.target}</Text>
-                                    </Flex>
-                                    <ProgressBar value={item.progress} className='mt-2' />
                                 </Card>
                             ))}
                         </Grid>
@@ -283,7 +287,7 @@ export default function Dashboard({
                                     </div>
                                     {/* web */}
                                     <div className='mt-8 hidden sm:block'>
-                                        <AreaChart {...areaChartArgs} />
+                                        <BarChart {...areaChartArgs} showLegend={true} stack={true} />
                                     </div>
                                     {/* mobile */}
                                     <div className='mt-8 sm:hidden'>
@@ -302,7 +306,6 @@ export default function Dashboard({
                                                     <Text>{item.title}</Text>
                                                     <Metric className='truncate'>{item.metric}</Metric>
                                                 </div>
-                                                <BadgeDelta deltaType={item.deltaType}>{item.delta}</BadgeDelta>
                                             </Flex>
                                             <Flex className='mt-4 space-x-2'>
                                                 <Text className='truncate'>{`${item.progress}% (${item.metric})`}</Text>
