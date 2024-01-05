@@ -9,6 +9,8 @@ import { DollarSign, DollarSignIcon } from 'lucide-react';
 import { Input } from './ui/input';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from './ui/select';
 import { Label } from './ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { ModeToggle } from './mode-toggle';
 
 export function Simulator() {
     const [age, setAge] = useState([25]);
@@ -22,7 +24,7 @@ export function Simulator() {
     const [freelanceRevenue, setFreelanceRevenue] = useState(0);
     const [conjointRevenue, setConjointRevenue] = useState(0);
 
-    const [interest, setInterest] = useState(5.1);
+    const [interest, setInterest] = useState(3);
 
     const lifeExpectancy = 79.3;
     const yearsofInvestment = 67 - age[0];
@@ -237,16 +239,30 @@ export function Simulator() {
                                 />
                             </div>
 
-                            <div>Ma TMI est de: {calculTMI()}</div>
+                            <div className='text-xl font-bold pt-8'>TMI de {calculTMI()}</div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
             <Card className='col-span-3'>
                 <CardHeader>
-                    <CardTitle className='flex'>
-                        <ChartBarIcon className='h-6 w-6 mr-2' />
-                        Mes resultats
+                    <CardTitle className='flex w-full justify-between items-center'>
+                        <div className='flex'>
+                            <ChartBarIcon className='h-6 w-6 mr-2' />
+                            Mes resultats
+                        </div>
+
+                        <div className='flex space-x-2'>
+                            <Tabs defaultValue={interest.toString()} onValueChange={(value) => setInterest(Number(value))}>
+                                <TabsList>
+                                    <TabsTrigger value='3'>Prudent</TabsTrigger>
+                                    <TabsTrigger value='4.5'>Équilibré</TabsTrigger>
+                                    <TabsTrigger value='6.5'>Dynamique</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+
+                            <ModeToggle />
+                        </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -259,6 +275,8 @@ export function Simulator() {
                         yearsofInvestment={yearsofInvestment}
                         firstPayment={firstPayment[0]}
                         interestYearOverYear={calculateCompoundedInterestPerYear()}
+                        interest={interest}
+                        tmi={calculTMI()}
                     />
                 </CardContent>
             </Card>

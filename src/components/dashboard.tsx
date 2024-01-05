@@ -138,6 +138,8 @@ export default function Dashboard({
     yearsofInvestment,
     firstPayment,
     interestYearOverYear,
+    interest,
+    tmi,
 }: {
     totalInvestment: number;
     composedInterest: number;
@@ -147,6 +149,8 @@ export default function Dashboard({
     yearsofInvestment: number;
     firstPayment: number;
     interestYearOverYear: number[];
+    interest: number;
+    tmi: number;
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -179,6 +183,31 @@ export default function Dashboard({
             deltaType: 'increase',
         },
     ];
+
+    const annualOptimization = (((totalInvestment - firstPayment) / yearsofInvestment) * tmi) / 100;
+    const totalOptimization = (totalInvestment - firstPayment) * (tmi / 100);
+    const kpiDataThirdLine: Kpi[] = [
+        {
+            title: 'OPTIMISATION ANNUELLE',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                annualOptimization,
+            )}`,
+            progress: ((possibleCapital / goal) * 100).toFixed(1) as unknown as number,
+            target: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(goal)}`,
+            delta: '10.1%',
+            deltaType: 'moderateIncrease',
+        },
+        {
+            title: 'OPTIMISATION TOTALE',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                totalOptimization,
+            )}`,
+            progress: 36.5,
+            target: '$ 125,000',
+            delta: '23.9%',
+            deltaType: 'increase',
+        },
+    ];
     const kpiDataSecondLine: Kpi[] = [
         {
             title: 'VERSEMENTS TOTAUX',
@@ -202,7 +231,7 @@ export default function Dashboard({
         },
         {
             title: 'PERFORMANCE ESPÉRÉE',
-            metric: '5.1% / an',
+            metric: `${interest}% / an`,
             progress: 53.6,
             target: '2,000',
             delta: '10.1%',
@@ -299,19 +328,14 @@ export default function Dashboard({
                             <div className='mt-6'>
                                 <h1 className='text-xl font-bold'>Impact fiscale</h1>
                                 <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                                    {kpiDataFirstLine.map((item) => (
+                                    {kpiDataThirdLine.map((item) => (
                                         <Card key={item.title}>
                                             <Flex alignItems='start'>
-                                                <div className='truncate'>
+                                                <div className='truncate space-y-2'>
                                                     <Text>{item.title}</Text>
                                                     <Metric className='truncate'>{item.metric}</Metric>
                                                 </div>
                                             </Flex>
-                                            <Flex className='mt-4 space-x-2'>
-                                                <Text className='truncate'>{`${item.progress}% (${item.metric})`}</Text>
-                                                <Text className='truncate'>{item.target}</Text>
-                                            </Flex>
-                                            <ProgressBar value={item.progress} className='mt-2' />
                                         </Card>
                                     ))}
                                 </Grid>
