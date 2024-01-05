@@ -276,7 +276,7 @@ export function Simulator() {
                         firstPayment={firstPayment[0]}
                         interestYearOverYear={calculateCompoundedInterestPerYear()}
                         interest={interest}
-                        tmi={calculTMI()}
+                        tmi={calculTMI() || 0}
                     />
                 </CardContent>
             </Card>
