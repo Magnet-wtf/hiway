@@ -5,7 +5,7 @@ import { Slider } from './ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Dashboard from './dashboard';
 import { ChartBarIcon, UserCircleIcon } from '@heroicons/react/24/solid';
-import { DollarSign, DollarSignIcon } from 'lucide-react';
+import { Briefcase, DollarSign, DollarSignIcon, Heart, Lightbulb, Rocket, Target } from 'lucide-react';
 import { Input } from './ui/input';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from './ui/select';
 import { Label } from './ui/label';
@@ -115,14 +115,14 @@ export function Simulator() {
                 <Card className='col-span-1 row-span-1'>
                     <CardHeader>
                         <CardTitle className='flex'>
-                            <UserCircleIcon className='h-6 w-6 mr-2' />
+                            <Lightbulb className='h-6 w-6 mr-2' />
                             Mon projet
                         </CardTitle>
                     </CardHeader>
                     <CardContent className='space-y-8'>
                         <div className='space-y-4'>
                             <div className='flex items-center justify-between w-full'>
-                                <h2>Mon age</h2>
+                                <h2>Mon âge</h2>
                                 <h2>{age} ans</h2>
                             </div>
                             <Slider defaultValue={[25]} max={66} min={18} step={1} value={age} onValueChange={(value) => setAge(value)} />
@@ -160,7 +160,7 @@ export function Simulator() {
                 <Card className='col-span-1 row-span-1'>
                     <CardHeader>
                         <CardTitle className='flex'>
-                            <DollarSign className='h-6 w-6 mr-2' />
+                            <Rocket className='h-6 w-6 mr-2' />
                             Mon objectif
                         </CardTitle>
                     </CardHeader>
@@ -199,16 +199,16 @@ export function Simulator() {
                 <Card className='col-span-1 row-span-2'>
                     <CardHeader>
                         <CardTitle className='flex'>
-                            <DollarSign className='h-6 w-6 mr-2' />
+                            <Heart className='h-6 w-6 mr-2' />
                             Ma situation fiscale
                         </CardTitle>
                     </CardHeader>
                     <CardContent className='space-y-8'>
                         <div className='space-y-4'>
                             <div className='space-y-2'>
-                                <Label>Revenue fiscale</Label>
+                                <Label>Revenu fiscal</Label>
                                 <Input
-                                    placeholder='Revenue fiscale'
+                                    placeholder='Revenu fiscal'
                                     value={fiscalRevenue}
                                     onChange={(e) => setFiscalRevenue(Number(e.target.value))}
                                 />
@@ -231,15 +231,18 @@ export function Simulator() {
                             </div>
 
                             <div className='space-y-2'>
-                                <Label>Personne a charge</Label>
+                                <Label>Personne(s) a charge</Label>
                                 <Input
-                                    placeholder='Personne a charge'
+                                    placeholder='Personne(s) a charge'
                                     value={peopleInCharge}
                                     onChange={(e) => setPeopleInCharge(Number(e.target.value))}
                                 />
                             </div>
 
-                            <div className='text-xl font-bold pt-8'>TMI de {calculTMI()}</div>
+                            <div className='text-2xl font-bold pt-8 flex items-center justify-center'>
+                                Votre TMI est de
+                                <div className='dark:bg-slate-800 bg-slate-300 rounded-xl p-4 ml-3'>{calculTMI()}%</div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -249,7 +252,7 @@ export function Simulator() {
                     <CardTitle className='flex w-full justify-between items-center'>
                         <div className='flex'>
                             <ChartBarIcon className='h-6 w-6 mr-2' />
-                            Mes resultats
+                            Mes résultats
                         </div>
 
                         <div className='flex space-x-2'>

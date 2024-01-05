@@ -256,7 +256,7 @@ export default function Dashboard({
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
         categories: ['Versements cumulés', 'Intérêt cumulés'],
-        colors: ['blue', 'yellow'] as Color[],
+        colors: ['#3b68ff', '#fec802'],
         showLegend: false,
         valueFormatter: (number: number) => `${usNumberformatter(number)}`,
         yAxisWidth: 120,
@@ -326,7 +326,7 @@ export default function Dashboard({
                             </Card>
 
                             <div className='mt-6'>
-                                <h1 className='text-xl font-bold'>Impact fiscale</h1>
+                                <h1 className='text-xl font-bold'>Impact fiscal</h1>
                                 <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
                                     {kpiDataThirdLine.map((item) => (
                                         <Card key={item.title}>
