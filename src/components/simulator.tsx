@@ -252,7 +252,7 @@ export function Simulator() {
                 <CardHeader>
                     <CardTitle className='flex w-full justify-between items-center'>
                         <div className='flex items-center'>
-                            <Image src='/hiway.svg' width={32} height={32} alt='Hiway' className='mr-2' />
+                            <Image src='/hiway.svg' width={42} height={42} alt='Hiway' className='mr-4' />
                             Mes résultats
                         </div>
 
