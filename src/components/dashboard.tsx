@@ -256,7 +256,7 @@ export default function Dashboard({
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
         categories: ['Versements cumulés', 'Intérêt cumulés'],
-        colors: ['#0d577c', '#ff5817'],
+        colors: ['#0d577c', '#ebac4b'],
         showLegend: false,
         valueFormatter: (number: number) => `${usNumberformatter(number)}`,
         yAxisWidth: 120,
