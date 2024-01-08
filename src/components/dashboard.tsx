@@ -281,7 +281,7 @@ export default function Dashboard({
                                                 <Text className='truncate'>{`${item.progress}%`}</Text>
                                                 <Text className='truncate'>{item.target}</Text>
                                             </Flex>
-                                            <ProgressBar value={item.progress} className='mt-2' color='#0d577c' />
+                                            <ProgressBar value={item.progress} className='mt-2' color={'#0d577c' as Color} />
                                         </>
                                     )}
                                 </Card>
