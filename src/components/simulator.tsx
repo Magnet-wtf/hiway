@@ -11,6 +11,7 @@ import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue, SelectGr
 import { Label } from './ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ModeToggle } from './mode-toggle';
+import Image from 'next/image';
 
 export function Simulator() {
     const [age, setAge] = useState([25]);
@@ -250,8 +251,8 @@ export function Simulator() {
             <Card className='col-span-3'>
                 <CardHeader>
                     <CardTitle className='flex w-full justify-between items-center'>
-                        <div className='flex'>
-                            <ChartBarIcon className='h-6 w-6 mr-2' />
+                        <div className='flex items-center'>
+                            <Image src='/hiway.svg' width={32} height={32} alt='Hiway' className='mr-2' />
                             Mes résultats
                         </div>
 
