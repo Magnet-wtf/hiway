@@ -199,7 +199,7 @@ module.exports = {
             `ui-selected:border-${customColor}`,
             `ui-selected:text-${customColor}`,
         ]),
-        ...['[#ebac4b]'].flatMap((customColor) => [
+        ...['[#fec802]'].flatMap((customColor) => [
             `bg-${customColor}`,
             `border-${customColor}`,
             `hover:bg-${customColor}`,
