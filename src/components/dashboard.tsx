@@ -256,7 +256,7 @@ export default function Dashboard({
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
         index: 'date',
         categories: ['Versements cumulés', 'Intérêt cumulés'],
-        colors: ['#3b68ff', '#fec802'],
+        colors: ['#0d577c', '#ff5817'],
         showLegend: false,
         valueFormatter: (number: number) => `${usNumberformatter(number)}`,
         yAxisWidth: 120,
@@ -306,11 +306,7 @@ export default function Dashboard({
                                         <div>
                                             <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
                                                 <Title> Performance </Title>
-                                                <Icon
-                                                    icon={InformationCircleIcon}
-                                                    variant='simple'
-                                                    tooltip='Shows daily increase or decrease of particular domain'
-                                                />
+                                                <Icon icon={InformationCircleIcon} variant='simple' tooltip='Performances non garanties' />
                                             </Flex>
                                         </div>
                                     </div>

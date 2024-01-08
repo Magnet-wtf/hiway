@@ -185,7 +185,7 @@ module.exports = {
             pattern:
                 /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
         },
-        ...['[#3b68ff]'].flatMap((customColor) => [
+        ...['[#0d577c]'].flatMap((customColor) => [
             `bg-${customColor}`,
             `border-${customColor}`,
             `hover:bg-${customColor}`,
@@ -199,7 +199,7 @@ module.exports = {
             `ui-selected:border-${customColor}`,
             `ui-selected:text-${customColor}`,
         ]),
-        ...['[#fec802]'].flatMap((customColor) => [
+        ...['[#ff5817]'].flatMap((customColor) => [
             `bg-${customColor}`,
             `border-${customColor}`,
             `hover:bg-${customColor}`,
