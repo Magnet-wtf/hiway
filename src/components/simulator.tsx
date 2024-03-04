@@ -138,7 +138,7 @@ export function Simulator() {
                             </div>
                             <Slider
                                 defaultValue={type === 'per' ? [25] : [15]}
-                                max={66}
+                                max={type === 'per' ? 66 : 20}
                                 min={type === 'per' ? 18 : 0}
                                 step={1}
                                 value={age}
@@ -166,7 +166,7 @@ export function Simulator() {
                             </div>
                             <Slider
                                 defaultValue={[100]}
-                                max={2500}
+                                max={type === 'per' ? 2500 : 2000}
                                 min={50}
                                 step={50}
                                 value={monthlyPayment}
