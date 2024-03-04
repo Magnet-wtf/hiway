@@ -125,7 +125,7 @@ export function Simulator() {
                     <CardContent className='space-y-8'>
                         <div className='space-y-4'>
                             <div className='flex items-center justify-between w-full'>
-                                <h2>Mon âge</h2>
+                                <h2>{type === 'per' ? 'Mon âge' : "Temp d'investissement"}</h2>
                                 <h2>{age} ans</h2>
                             </div>
                             <Slider defaultValue={[25]} max={66} min={18} step={1} value={age} onValueChange={(value) => setAge(value)} />
@@ -138,7 +138,7 @@ export function Simulator() {
                             <Slider
                                 defaultValue={[2000]}
                                 max={50000}
-                                min={500}
+                                min={type === 'per' ? 500 : 0}
                                 step={500}
                                 value={firstPayment}
                                 onValueChange={(value) => setFirstPayment(value)}

@@ -269,37 +269,90 @@ export default function Dashboard({
                 <TabPanels>
                     <TabPanel>
                         <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                            {kpiDataFirstLine.map((item, index) => (
-                                <Card key={item.title} className='flex flex-col justify-center'>
-                                    <Flex alignItems={index === 0 ? 'start' : 'center'} justifyContent={index === 0 ? 'start' : 'center'}>
-                                        <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
-                                            <Text>{item.title}</Text>
-                                            <Metric className='truncate text-5xl'>{item.metric}</Metric>
-                                        </div>
-                                    </Flex>
-                                    {index === 0 && (
+                            {type === 'per' ? (
+                                <>
+                                    {kpiDataFirstLine.map((item, index) => (
+                                        <Card key={item.title} className='flex flex-col justify-center'>
+                                            <Flex
+                                                alignItems={index === 0 ? 'start' : 'center'}
+                                                justifyContent={index === 0 ? 'start' : 'center'}
+                                            >
+                                                <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
+                                                    <Text>{item.title}</Text>
+                                                    <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                                                </div>
+                                            </Flex>
+                                            {index === 0 && (
+                                                <>
+                                                    <Flex className='mt-4 space-x-2'>
+                                                        <Text className='truncate'>{`${item.progress}%`}</Text>
+                                                        <Text className='truncate'>{item.target}</Text>
+                                                    </Flex>
+                                                    <ProgressBar value={item.progress} className='mt-2' color={'#0d577c' as Color} />
+                                                </>
+                                            )}
+                                        </Card>
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    <Card key={kpiDataFirstLine[0].title} className='flex flex-col justify-center'>
+                                        <Flex alignItems={'start'} justifyContent={'start'}>
+                                            <div className={`truncate space-y-2`}>
+                                                <Text>{kpiDataFirstLine[0].title}</Text>
+                                                <Metric className='truncate text-5xl'>{kpiDataFirstLine[0].metric}</Metric>
+                                            </div>
+                                        </Flex>
+
                                         <>
                                             <Flex className='mt-4 space-x-2'>
-                                                <Text className='truncate'>{`${item.progress}%`}</Text>
-                                                <Text className='truncate'>{item.target}</Text>
+                                                <Text className='truncate'>{`${kpiDataFirstLine[0].progress}%`}</Text>
+                                                <Text className='truncate'>{kpiDataFirstLine[0].target}</Text>
                                             </Flex>
-                                            <ProgressBar value={item.progress} className='mt-2' color={'#0d577c' as Color} />
+                                            <ProgressBar value={kpiDataFirstLine[0].progress} className='mt-2' color={'#0d577c' as Color} />
                                         </>
-                                    )}
-                                </Card>
-                            ))}
+                                    </Card>
+                                    <Card key={kpiDataSecondLine[2].title} className='flex flex-col justify-center'>
+                                        <Flex alignItems={'center'} justifyContent={'center'}>
+                                            <div className={`truncate space-y-2 text-center`}>
+                                                <Text>{kpiDataSecondLine[2].title}</Text>
+                                                <Metric className='truncate text-5xl'>{kpiDataSecondLine[2].metric}</Metric>
+                                            </div>
+                                        </Flex>
+                                    </Card>
+                                </>
+                            )}
                         </Grid>
-                        <Grid numItemsMd={2} numItemsLg={3} className='mt-6 gap-6'>
-                            {kpiDataSecondLine.map((item) => (
-                                <Card key={item.title}>
-                                    <Flex alignItems='start'>
-                                        <div className='truncate space-y-2'>
-                                            <Text>{item.title}</Text>
-                                            <Metric className='truncate text-4xl'>{item.metric}</Metric>
-                                        </div>
-                                    </Flex>
-                                </Card>
-                            ))}
+                        <Grid numItemsMd={2} numItemsLg={type === 'per' ? 3 : 2} className='mt-6 gap-6'>
+                            {type === 'per' ? (
+                                <>
+                                    {kpiDataSecondLine.map((item) => (
+                                        <Card key={item.title}>
+                                            <Flex alignItems='start'>
+                                                <div className='truncate space-y-2'>
+                                                    <Text>{item.title}</Text>
+                                                    <Metric className='truncate text-4xl'>{item.metric}</Metric>
+                                                </div>
+                                            </Flex>
+                                        </Card>
+                                    ))}
+                                </>
+                            ) : (
+                                <>
+                                    {kpiDataSecondLine
+                                        .filter((value, index) => index < 2)
+                                        .map((item) => (
+                                            <Card key={item.title}>
+                                                <Flex alignItems='start'>
+                                                    <div className='truncate space-y-2'>
+                                                        <Text>{item.title}</Text>
+                                                        <Metric className='truncate text-4xl'>{item.metric}</Metric>
+                                                    </div>
+                                                </Flex>
+                                            </Card>
+                                        ))}
+                                </>
+                            )}
                         </Grid>
                         <div className='mt-6'>
                             <Card>
