@@ -140,6 +140,7 @@ export default function Dashboard({
     interestYearOverYear,
     interest,
     tmi,
+    type,
 }: {
     totalInvestment: number;
     composedInterest: number;
@@ -151,6 +152,7 @@ export default function Dashboard({
     interestYearOverYear: number[];
     interest: number;
     tmi: number;
+    type: 'per' | 'vie';
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -163,7 +165,7 @@ export default function Dashboard({
 
     const kpiDataFirstLine: Kpi[] = [
         {
-            title: 'CAPITAL ESPÉRÉ À 67 ANS',
+            title: `CAPITAL ESPÉRÉ${type === 'per' ? ' À 67 ANS' : ''}`,
             metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
                 possibleCapital,
             )}`,
@@ -321,21 +323,23 @@ export default function Dashboard({
                                 </>
                             </Card>
 
-                            <div className='mt-6'>
-                                <h1 className='text-xl font-bold'>Impact fiscal</h1>
-                                <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                                    {kpiDataThirdLine.map((item) => (
-                                        <Card key={item.title}>
-                                            <Flex alignItems='start'>
-                                                <div className='truncate space-y-2'>
-                                                    <Text>{item.title}</Text>
-                                                    <Metric className='truncate'>{item.metric}</Metric>
-                                                </div>
-                                            </Flex>
-                                        </Card>
-                                    ))}
-                                </Grid>
-                            </div>
+                            {type === 'per' && (
+                                <div className='mt-6'>
+                                    <h1 className='text-xl font-bold'>Impact fiscal</h1>
+                                    <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
+                                        {kpiDataThirdLine.map((item) => (
+                                            <Card key={item.title}>
+                                                <Flex alignItems='start'>
+                                                    <div className='truncate space-y-2'>
+                                                        <Text>{item.title}</Text>
+                                                        <Metric className='truncate'>{item.metric}</Metric>
+                                                    </div>
+                                                </Flex>
+                                            </Card>
+                                        ))}
+                                    </Grid>
+                                </div>
+                            )}
                         </div>
                     </TabPanel>
                     <TabPanel>

@@ -27,6 +27,8 @@ export function Simulator() {
 
     const [interest, setInterest] = useState(3);
 
+    const [type, setType] = useState<'per' | 'vie'>('per');
+
     const lifeExpectancy = 79.3;
     const yearsofInvestment = 67 - age[0];
     const monthlyInvestment = monthlyPayment[0] * 12;
@@ -197,56 +199,58 @@ export function Simulator() {
                         /> */}
                     </CardContent>
                 </Card>
-                <Card className='col-span-1 row-span-2'>
-                    <CardHeader>
-                        <CardTitle className='flex'>
-                            <Heart className='h-6 w-6 mr-2' />
-                            Ma situation fiscale
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-8'>
-                        <div className='space-y-4'>
-                            <div className='space-y-2'>
-                                <Label>Revenu fiscal</Label>
-                                <Input
-                                    placeholder='Revenu fiscal'
-                                    value={fiscalRevenue}
-                                    onChange={(e) => setFiscalRevenue(Number(e.target.value))}
-                                />
-                            </div>
-                            <div className='w-full space-y-2'>
-                                <Label>Situation</Label>
-                                <Select onValueChange={(value) => setSituation(value)}>
-                                    <SelectTrigger className='w-full'>
-                                        <SelectValue placeholder='Selectionne ta situation' />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Situation</SelectLabel>
-                                            <SelectItem value='celibataire'>Celibataire</SelectItem>
-                                            <SelectItem value='marier/pacse'>Marié/Pacsé</SelectItem>
-                                            <SelectItem value='divorce'>Divorcé</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                {type === 'per' && (
+                    <Card className='col-span-1 row-span-2'>
+                        <CardHeader>
+                            <CardTitle className='flex'>
+                                <Heart className='h-6 w-6 mr-2' />
+                                Ma situation fiscale
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className='space-y-8'>
+                            <div className='space-y-4'>
+                                <div className='space-y-2'>
+                                    <Label>Revenu fiscal</Label>
+                                    <Input
+                                        placeholder='Revenu fiscal'
+                                        value={fiscalRevenue}
+                                        onChange={(e) => setFiscalRevenue(Number(e.target.value))}
+                                    />
+                                </div>
+                                <div className='w-full space-y-2'>
+                                    <Label>Situation</Label>
+                                    <Select onValueChange={(value) => setSituation(value)}>
+                                        <SelectTrigger className='w-full'>
+                                            <SelectValue placeholder='Selectionne ta situation' />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Situation</SelectLabel>
+                                                <SelectItem value='celibataire'>Celibataire</SelectItem>
+                                                <SelectItem value='marier/pacse'>Marié/Pacsé</SelectItem>
+                                                <SelectItem value='divorce'>Divorcé</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                            <div className='space-y-2'>
-                                <Label>Personne(s) a charge</Label>
-                                <Input
-                                    placeholder='Personne(s) a charge'
-                                    value={peopleInCharge}
-                                    onChange={(e) => setPeopleInCharge(Number(e.target.value))}
-                                />
-                            </div>
+                                <div className='space-y-2'>
+                                    <Label>Personne(s) a charge</Label>
+                                    <Input
+                                        placeholder='Personne(s) a charge'
+                                        value={peopleInCharge}
+                                        onChange={(e) => setPeopleInCharge(Number(e.target.value))}
+                                    />
+                                </div>
 
-                            <div className='text-2xl font-bold pt-8 flex items-center justify-center'>
-                                Votre TMI est de
-                                <div className='dark:bg-slate-800 bg-slate-300 rounded-xl p-4 ml-3'>{calculTMI()}%</div>
+                                <div className='text-2xl font-bold pt-8 flex items-center justify-center'>
+                                    Votre TMI est de
+                                    <div className='dark:bg-slate-800 bg-slate-300 rounded-xl p-4 ml-3'>{calculTMI()}%</div>
+                                </div>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
             <Card className='col-span-3'>
                 <CardHeader>
@@ -254,6 +258,12 @@ export function Simulator() {
                         <div className='flex items-center'>
                             <Image src='/hiway.svg' width={42} height={42} alt='Hiway' className='mr-4' />
                             Mes résultats
+                            <Tabs defaultValue={type} onValueChange={(value) => setType(value as 'per' | 'vie')} className='ml-8'>
+                                <TabsList>
+                                    <TabsTrigger value='per'>PER</TabsTrigger>
+                                    <TabsTrigger value='vie'>Assurance Vie</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
 
                         <div className='flex space-x-2'>
@@ -281,6 +291,7 @@ export function Simulator() {
                         interestYearOverYear={calculateCompoundedInterestPerYear()}
                         interest={interest}
                         tmi={calculTMI() || 0}
+                        type={type}
                     />
                 </CardContent>
             </Card>

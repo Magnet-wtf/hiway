@@ -107,7 +107,7 @@ module.exports = {
                     },
                     content: {
                         subtle: colors.gray[600],
-                        DEFAULT: colors.gray[500],
+                        DEFAULT: colors.gray[300],
                         emphasis: colors.gray[200],
                         strong: colors.gray[50],
                         inverted: colors.gray[950],
@@ -151,7 +151,7 @@ module.exports = {
             },
             fontSize: {
                 'tremor-label': ['0.75rem'],
-                'tremor-default': ['0.875rem', { lineHeight: '1.25rem' }],
+                'tremor-default': ['0.9rem', { lineHeight: '1.25rem', fontWeight: '500' }],
                 'tremor-title': ['1.125rem', { lineHeight: '1.75rem' }],
                 'tremor-metric': ['1.875rem', { lineHeight: '2.25rem' }],
             },
