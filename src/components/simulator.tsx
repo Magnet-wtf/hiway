@@ -30,7 +30,7 @@ export function Simulator() {
     const [type, setType] = useState<'per' | 'vie'>('per');
 
     const lifeExpectancy = 79.3;
-    const yearsofInvestment = 67 - age[0];
+    const yearsofInvestment = type === 'per' ? 67 - age[0] : age[0];
     const monthlyInvestment = monthlyPayment[0] * 12;
     const totalInvestment = monthlyInvestment * yearsofInvestment + firstPayment[0];
     const interestRate = interest / 100; // converting percentage to a decimal
@@ -45,7 +45,7 @@ export function Simulator() {
     const compoundedInterestValue = totalInvestmentWithInterest - (firstPayment[0] + totalInvestment);
 
     function calculateCompoundedInterestPerYear() {
-        const yearsofInvestment = 67 - age[0];
+        const yearsofInvestment = type === 'per' ? 67 - age[0] : age[0];
         const monthlyInterestRate = interest / 100 / 12; // Monthly interest rate
 
         let compoundedInterestValues = [];
