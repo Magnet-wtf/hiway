@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Slider } from './ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Dashboard from './dashboard';
@@ -112,6 +112,14 @@ export function Simulator() {
         }
     };
 
+    useEffect(() => {
+        if (type === 'per') {
+            setAge([25]);
+        } else {
+            setAge([15]);
+        }
+    }, [type]);
+
     return (
         <div className='w-full grid grid-cols-4 space-x-4'>
             <div className='col-span-1 space-y-4 grid grid-cols-1 grid-rows-8'>
@@ -128,7 +136,14 @@ export function Simulator() {
                                 <h2>{type === 'per' ? 'Mon âge' : "Temps d'investissement"}</h2>
                                 <h2>{age} ans</h2>
                             </div>
-                            <Slider defaultValue={[25]} max={66} min={18} step={1} value={age} onValueChange={(value) => setAge(value)} />
+                            <Slider
+                                defaultValue={type === 'per' ? [25] : [15]}
+                                max={66}
+                                min={type === 'per' ? 18 : 0}
+                                step={1}
+                                value={age}
+                                onValueChange={(value) => setAge(value)}
+                            />
                         </div>
                         <div className='space-y-4'>
                             <div className='flex items-center justify-between w-full'>
