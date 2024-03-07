@@ -67,48 +67,33 @@ export function Simulator() {
     const monthlyRetirement = possibleCapitalAt67 / monthsOfRetirement;
 
     const calculateQuotientFamilial = () => {
-        if (situation === 'celibataire') {
-            if (peopleInCharge === 1) {
-                return 1.5;
-            }
-            return 1 + peopleInCharge;
+        // Assuming "situation" and "peopleInCharge" are defined elsewhere in your component or logic
+        if (situation === 'celibataire' || situation === 'divorce') {
+            return 1 + (peopleInCharge > 0 ? 0.5 * peopleInCharge : 0);
         } else if (situation === 'marier/pacse') {
-            if (peopleInCharge === 1) {
-                return 2.5;
-            }
-            return 2 + peopleInCharge;
+            // For married or PACS (civil partnership), the base quotient is 2 for the couple
+            return 2 + (peopleInCharge > 0 ? 0.5 * peopleInCharge : 0);
         }
 
+        // Default case if situation is not recognized
         return 1;
     };
 
     const calculTMI = () => {
-        if (situation === 'celibataire' && peopleInCharge === 0) {
-            if (fiscalRevenue <= 10777) {
-                return 0;
-            } else if (fiscalRevenue <= 27478) {
-                return 11;
-            } else if (fiscalRevenue <= 78570) {
-                return 30;
-            } else if (fiscalRevenue <= 168994) {
-                return 41;
-            } else {
-                return 45;
-            }
-        } else if (situation === 'marier/pacse') {
-            const quotientFamilial = calculateQuotientFamilial();
-            const revenueWithQuotient = fiscalRevenue / quotientFamilial;
-            if (revenueWithQuotient <= 10777) {
-                return 0;
-            } else if (revenueWithQuotient <= 27478) {
-                return 11;
-            } else if (revenueWithQuotient <= 78570) {
-                return 30;
-            } else if (revenueWithQuotient <= 168994) {
-                return 41;
-            } else {
-                return 45;
-            }
+        let quotientFamilial = calculateQuotientFamilial();
+        let revenueWithQuotient = fiscalRevenue / quotientFamilial;
+
+        // Adjust the fiscal brackets according to the latest tax scale if necessary
+        if (revenueWithQuotient <= 11295) {
+            return 0; // No tax
+        } else if (revenueWithQuotient <= 28797) {
+            return 11; // 11% tax
+        } else if (revenueWithQuotient <= 82341) {
+            return 30; // 30% tax
+        } else if (revenueWithQuotient <= 177106) {
+            return 41; // 41% tax
+        } else {
+            return 45; // 45% tax
         }
     };
 
