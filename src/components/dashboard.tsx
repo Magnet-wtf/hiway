@@ -129,6 +129,67 @@ const deltaTypes: { [key: string]: DeltaType } = {
     underperforming: 'moderateDecrease',
 };
 
+interface InvestmentYearData {
+    year: number;
+    annualInvestment: number;
+    cumulativeInvestment: number;
+    grossInterest: number;
+    netInterest: number;
+    cumulativeNetInterest: number;
+    totalValue: number;
+}
+
+function calculateInvestmentData(annualInvestment: number[], tmi: number, rentability: number, years: number): InvestmentYearData[] {
+    let investmentData: InvestmentYearData[] = [];
+    let cumulativeInvestment = 0;
+    let cumulativeNetInterest = 0;
+
+    for (let i = 0; i < years; i++) {
+        console.log('Investissement Annuel', annualInvestment);
+        // Calculate investment for the year
+        if (i === 0) {
+            cumulativeInvestment += annualInvestment[i];
+        } else {
+            cumulativeInvestment = investmentData[i - 1].totalValue + annualInvestment[i];
+        }
+
+        console.log('Versements cumulés', cumulativeInvestment);
+
+        // Calculate gross interest for previous year's investment
+        let grossInterest = cumulativeInvestment * (rentability / 100);
+
+        console.log('Intérêts bruts', grossInterest);
+
+        // Calculate net interest after TMI
+        let netInterest = grossInterest - grossInterest * 0.172 - (grossInterest * tmi) / 100;
+
+        console.log('Intérêts nets', netInterest);
+
+        // Update cumulative net interest
+        cumulativeNetInterest += netInterest;
+
+        console.log('Intérêts cumulés nets', cumulativeNetInterest);
+
+        // Calculate total value at the end of the year
+        cumulativeInvestment += i === 0 ? netInterest : 0;
+        let totalValue = i === 0 ? cumulativeInvestment : grossInterest + cumulativeInvestment;
+
+        console.log('Valeur totale', totalValue);
+
+        investmentData.push({
+            year: new Date().getFullYear() + i,
+            annualInvestment: annualInvestment[i],
+            cumulativeInvestment,
+            grossInterest,
+            netInterest,
+            cumulativeNetInterest,
+            totalValue,
+        });
+    }
+
+    return investmentData;
+}
+
 export default function Dashboard({
     totalInvestment,
     composedInterest,
@@ -141,6 +202,18 @@ export default function Dashboard({
     interest,
     tmi,
     type,
+    inputtedTMI,
+    inputtedRentability,
+    year1,
+    year2,
+    year3,
+    year4,
+    year5,
+    year6,
+    year7,
+    year8,
+    year9,
+    year10,
 }: {
     totalInvestment: number;
     composedInterest: number;
@@ -152,7 +225,19 @@ export default function Dashboard({
     interestYearOverYear: number[];
     interest: number;
     tmi: number;
-    type: 'per' | 'vie';
+    type: 'per' | 'vie' | 'scpi';
+    inputtedTMI: number;
+    inputtedRentability: number;
+    year1: number;
+    year2: number;
+    year3: number;
+    year4: number;
+    year5: number;
+    year6: number;
+    year7: number;
+    year8: number;
+    year9: number;
+    year10: number;
 }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const selectedKpi = kpiList[selectedIndex];
@@ -162,6 +247,14 @@ export default function Dashboard({
     const isSalesPersonSelected = (salesPerson: SalesPerson) =>
         (salesPerson.status === selectedStatus || selectedStatus === 'all') &&
         (selectedNames.includes(salesPerson.name) || selectedNames.length === 0);
+
+    const totalInvestment10Years = [year1, year2, year3, year4, year5, year6, year7, year8, year9, year10];
+
+    const investmentYears = calculateInvestmentData(totalInvestment10Years, inputtedTMI, inputtedRentability, 10);
+    const totalCalculatedNetInterest = investmentYears.reduce((acc, year) => acc + year.netInterest, 0);
+    const totalCalculatedTotalValue = investmentYears[investmentYears.length - 1].totalValue;
+    const totalCalculatedCumulativeNetInterest = investmentYears[investmentYears.length - 1].cumulativeNetInterest;
+    const totalCalculatedCumulativeInvestment = investmentYears[investmentYears.length - 1].cumulativeInvestment;
 
     const kpiDataFirstLine: Kpi[] = [
         {
@@ -183,6 +276,42 @@ export default function Dashboard({
             target: '$ 125,000',
             delta: '23.9%',
             deltaType: 'increase',
+        },
+    ];
+
+    const kpiSCPIFirstLine: Kpi[] = [
+        {
+            title: `VERSEMENTS + REINVESTISSENTS TOTAUX`,
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                totalCalculatedCumulativeInvestment,
+            )}`,
+            progress: ((possibleCapital / goal) * 100).toFixed(1) as unknown as number,
+            target: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(goal)}`,
+            delta: '10.1%',
+            deltaType: 'moderateIncrease',
+        },
+        {
+            title: 'VALEUR TOTALE',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                totalCalculatedTotalValue,
+            )}`,
+            progress: 36.5,
+            target: '$ 125,000',
+            delta: '23.9%',
+            deltaType: 'increase',
+        },
+    ];
+
+    const kpiSCPISecondLine: Kpi[] = [
+        {
+            title: 'INTERES NETS',
+            metric: `${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
+                totalCalculatedCumulativeNetInterest,
+            )}`,
+            progress: 53.6,
+            target: '2,000',
+            delta: '10.1%',
+            deltaType: 'moderateDecrease',
         },
     ];
 
@@ -253,6 +382,20 @@ export default function Dashboard({
         return performance;
     }
 
+    function buildSCPIPerformanceFromTotalInvestmentAndComposedInterestYearOverYear() {
+        const performance: DailyPerformance[] = [];
+
+        const interestYearOverYear = calculateInvestmentData(totalInvestment10Years, inputtedTMI, inputtedRentability, 10);
+        for (let i = 0; i < 10; i++) {
+            performance.push({
+                date: `${i + 1}`,
+                'Versements cumulés': interestYearOverYear[i].cumulativeInvestment,
+                'Intérêt cumulés': interestYearOverYear[i].cumulativeNetInterest,
+            });
+        }
+        return performance;
+    }
+
     const areaChartArgs = {
         className: 'mt-5 h-96',
         data: buildPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
@@ -263,85 +406,87 @@ export default function Dashboard({
         valueFormatter: (number: number) => `${usNumberformatter(number)}`,
         yAxisWidth: 120,
     };
+
+    const scpiAreaChartArgs = {
+        className: 'mt-5 h-96',
+        data: buildSCPIPerformanceFromTotalInvestmentAndComposedInterestYearOverYear(),
+        index: 'date',
+        categories: ['Versements cumulés', 'Intérêt cumulés'],
+        colors: ['#0d577c', '#fec802'],
+        showLegend: false,
+        valueFormatter: (number: number) => `${usNumberformatter(number)}`,
+        yAxisWidth: 120,
+    };
+
     return (
         <main>
             <TabGroup className='mt-6'>
                 <TabPanels>
-                    <TabPanel>
-                        <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                            {type === 'per' ? (
-                                <>
-                                    {kpiDataFirstLine.map((item, index) => (
-                                        <Card key={item.title} className='flex flex-col justify-center'>
-                                            <Flex
-                                                alignItems={index === 0 ? 'start' : 'center'}
-                                                justifyContent={index === 0 ? 'start' : 'center'}
-                                            >
-                                                <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
-                                                    <Text>{item.title}</Text>
-                                                    <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                    {type === 'per' || type === 'vie' ? (
+                        <TabPanel>
+                            <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
+                                {type === 'per' ? (
+                                    <>
+                                        {kpiDataFirstLine.map((item, index) => (
+                                            <Card key={item.title} className='flex flex-col justify-center'>
+                                                <Flex
+                                                    alignItems={index === 0 ? 'start' : 'center'}
+                                                    justifyContent={index === 0 ? 'start' : 'center'}
+                                                >
+                                                    <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
+                                                        <Text>{item.title}</Text>
+                                                        <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                                                    </div>
+                                                </Flex>
+                                                {index === 0 && (
+                                                    <>
+                                                        <Flex className='mt-4 space-x-2'>
+                                                            <Text className='truncate'>{`${item.progress}%`}</Text>
+                                                            <Text className='truncate'>{item.target}</Text>
+                                                        </Flex>
+                                                        <ProgressBar value={item.progress} className='mt-2' color={'#0d577c' as Color} />
+                                                    </>
+                                                )}
+                                            </Card>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Card key={kpiDataFirstLine[0].title} className='flex flex-col justify-center'>
+                                            <Flex alignItems={'start'} justifyContent={'start'}>
+                                                <div className={`truncate space-y-2`}>
+                                                    <Text>{kpiDataFirstLine[0].title}</Text>
+                                                    <Metric className='truncate text-5xl'>{kpiDataFirstLine[0].metric}</Metric>
                                                 </div>
                                             </Flex>
-                                            {index === 0 && (
-                                                <>
-                                                    <Flex className='mt-4 space-x-2'>
-                                                        <Text className='truncate'>{`${item.progress}%`}</Text>
-                                                        <Text className='truncate'>{item.target}</Text>
-                                                    </Flex>
-                                                    <ProgressBar value={item.progress} className='mt-2' color={'#0d577c' as Color} />
-                                                </>
-                                            )}
-                                        </Card>
-                                    ))}
-                                </>
-                            ) : (
-                                <>
-                                    <Card key={kpiDataFirstLine[0].title} className='flex flex-col justify-center'>
-                                        <Flex alignItems={'start'} justifyContent={'start'}>
-                                            <div className={`truncate space-y-2`}>
-                                                <Text>{kpiDataFirstLine[0].title}</Text>
-                                                <Metric className='truncate text-5xl'>{kpiDataFirstLine[0].metric}</Metric>
-                                            </div>
-                                        </Flex>
 
-                                        <>
-                                            <Flex className='mt-4 space-x-2'>
-                                                <Text className='truncate'>{`${kpiDataFirstLine[0].progress}%`}</Text>
-                                                <Text className='truncate'>{kpiDataFirstLine[0].target}</Text>
-                                            </Flex>
-                                            <ProgressBar value={kpiDataFirstLine[0].progress} className='mt-2' color={'#0d577c' as Color} />
-                                        </>
-                                    </Card>
-                                    <Card key={kpiDataSecondLine[2].title} className='flex flex-col justify-center'>
-                                        <Flex alignItems={'center'} justifyContent={'center'}>
-                                            <div className={`truncate space-y-2 text-center`}>
-                                                <Text>{kpiDataSecondLine[2].title}</Text>
-                                                <Metric className='truncate text-5xl'>{kpiDataSecondLine[2].metric}</Metric>
-                                            </div>
-                                        </Flex>
-                                    </Card>
-                                </>
-                            )}
-                        </Grid>
-                        <Grid numItemsMd={2} numItemsLg={type === 'per' ? 3 : 2} className='mt-6 gap-6'>
-                            {type === 'per' ? (
-                                <>
-                                    {kpiDataSecondLine.map((item) => (
-                                        <Card key={item.title}>
-                                            <Flex alignItems='start'>
-                                                <div className='truncate space-y-2'>
-                                                    <Text>{item.title}</Text>
-                                                    <Metric className='truncate text-4xl'>{item.metric}</Metric>
+                                            <>
+                                                <Flex className='mt-4 space-x-2'>
+                                                    <Text className='truncate'>{`${kpiDataFirstLine[0].progress}%`}</Text>
+                                                    <Text className='truncate'>{kpiDataFirstLine[0].target}</Text>
+                                                </Flex>
+                                                <ProgressBar
+                                                    value={kpiDataFirstLine[0].progress}
+                                                    className='mt-2'
+                                                    color={'#0d577c' as Color}
+                                                />
+                                            </>
+                                        </Card>
+                                        <Card key={kpiDataSecondLine[2].title} className='flex flex-col justify-center'>
+                                            <Flex alignItems={'center'} justifyContent={'center'}>
+                                                <div className={`truncate space-y-2 text-center`}>
+                                                    <Text>{kpiDataSecondLine[2].title}</Text>
+                                                    <Metric className='truncate text-5xl'>{kpiDataSecondLine[2].metric}</Metric>
                                                 </div>
                                             </Flex>
                                         </Card>
-                                    ))}
-                                </>
-                            ) : (
-                                <>
-                                    {kpiDataSecondLine
-                                        .filter((value, index) => index < 2)
-                                        .map((item) => (
+                                    </>
+                                )}
+                            </Grid>
+                            <Grid numItemsMd={2} numItemsLg={type === 'per' ? 3 : 2} className='mt-6 gap-6'>
+                                {type === 'per' ? (
+                                    <>
+                                        {kpiDataSecondLine.map((item) => (
                                             <Card key={item.title}>
                                                 <Flex alignItems='start'>
                                                     <div className='truncate space-y-2'>
@@ -351,120 +496,129 @@ export default function Dashboard({
                                                 </Flex>
                                             </Card>
                                         ))}
-                                </>
-                            )}
-                        </Grid>
-                        <div className='mt-6'>
-                            <Card>
-                                <>
-                                    <div className='md:flex justify-between'>
-                                        <div>
-                                            <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
-                                                <Title> Performance </Title>
-                                                <Icon icon={InformationCircleIcon} variant='simple' tooltip='Performances non garanties' />
-                                            </Flex>
-                                        </div>
-                                    </div>
-                                    {/* web */}
-                                    <div className='mt-8 hidden sm:block'>
-                                        <BarChart {...areaChartArgs} showLegend={true} stack={true} />
-                                    </div>
-                                    {/* mobile */}
-                                    <div className='mt-8 sm:hidden'>
-                                        <AreaChart {...areaChartArgs} startEndOnly={true} showGradient={false} showYAxis={false} />
-                                    </div>
-                                </>
-                            </Card>
-
-                            {type === 'per' && (
-                                <div className='mt-6'>
-                                    <h1 className='text-xl font-bold'>Impact fiscal</h1>
-                                    <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
-                                        {kpiDataThirdLine.map((item) => (
-                                            <Card key={item.title}>
-                                                <Flex alignItems='start'>
-                                                    <div className='truncate space-y-2'>
-                                                        <Text>{item.title}</Text>
-                                                        <Metric className='truncate'>{item.metric}</Metric>
-                                                    </div>
-                                                </Flex>
-                                            </Card>
-                                        ))}
-                                    </Grid>
-                                </div>
-                            )}
-                        </div>
-                    </TabPanel>
-                    <TabPanel>
-                        <div className='mt-6'>
-                            <Card>
-                                <>
-                                    <div>
-                                        <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
-                                            <Title> Performance History </Title>
-                                            <Icon
-                                                icon={InformationCircleIcon}
-                                                variant='simple'
-                                                tooltip='Shows sales performance per employee'
-                                            />
-                                        </Flex>
-                                    </div>
-                                    <div className='flex space-x-2'>
-                                        <MultiSelect
-                                            className='max-w-full sm:max-w-xs'
-                                            onValueChange={setSelectedNames}
-                                            placeholder='Select Salespeople...'
-                                        >
-                                            {salesPeople.map((item) => (
-                                                <MultiSelectItem key={item.name} value={item.name}>
-                                                    {item.name}
-                                                </MultiSelectItem>
+                                    </>
+                                ) : (
+                                    <>
+                                        {kpiDataSecondLine
+                                            .filter((value, index) => index < 2)
+                                            .map((item) => (
+                                                <Card key={item.title}>
+                                                    <Flex alignItems='start'>
+                                                        <div className='truncate space-y-2'>
+                                                            <Text>{item.title}</Text>
+                                                            <Metric className='truncate text-4xl'>{item.metric}</Metric>
+                                                        </div>
+                                                    </Flex>
+                                                </Card>
                                             ))}
-                                        </MultiSelect>
-                                        <Select className='max-w-full sm:max-w-xs' defaultValue='all' onValueChange={setSelectedStatus}>
-                                            <SelectItem value='all'>All Performances</SelectItem>
-                                            <SelectItem value='overperforming'>Overperforming</SelectItem>
-                                            <SelectItem value='average'>Average</SelectItem>
-                                            <SelectItem value='underperforming'>Underperforming</SelectItem>
-                                        </Select>
-                                    </div>
-                                    <Table className='mt-6'>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableHeaderCell>Name</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Leads</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Sales ($)</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Quota ($)</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Variance</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Region</TableHeaderCell>
-                                                <TableHeaderCell className='text-right'>Status</TableHeaderCell>
-                                            </TableRow>
-                                        </TableHead>
+                                    </>
+                                )}
+                            </Grid>
+                            <div className='mt-6'>
+                                <Card>
+                                    <>
+                                        <div className='md:flex justify-between'>
+                                            <div>
+                                                <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
+                                                    <Title> Performance </Title>
+                                                    <Icon
+                                                        icon={InformationCircleIcon}
+                                                        variant='simple'
+                                                        tooltip='Performances non garanties'
+                                                    />
+                                                </Flex>
+                                            </div>
+                                        </div>
+                                        {/* web */}
+                                        <div className='mt-8 hidden sm:block'>
+                                            <BarChart {...areaChartArgs} showLegend={true} stack={true} />
+                                        </div>
+                                        {/* mobile */}
+                                        <div className='mt-8 sm:hidden'>
+                                            <AreaChart {...areaChartArgs} startEndOnly={true} showGradient={false} showYAxis={false} />
+                                        </div>
+                                    </>
+                                </Card>
 
-                                        <TableBody>
-                                            {salesPeople
-                                                .filter((item) => isSalesPersonSelected(item))
-                                                .map((item) => (
-                                                    <TableRow key={item.name}>
-                                                        <TableCell>{item.name}</TableCell>
-                                                        <TableCell className='text-right'>{item.leads}</TableCell>
-                                                        <TableCell className='text-right'>{item.sales}</TableCell>
-                                                        <TableCell className='text-right'>{item.quota}</TableCell>
-                                                        <TableCell className='text-right'>{item.variance}</TableCell>
-                                                        <TableCell className='text-right'>{item.region}</TableCell>
-                                                        <TableCell className='text-right'>
-                                                            <BadgeDelta deltaType={deltaTypes[item.status]} size='xs'>
-                                                                {item.status}
-                                                            </BadgeDelta>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                        </TableBody>
-                                    </Table>
-                                </>
-                            </Card>
-                        </div>
-                    </TabPanel>
+                                {type === 'per' && (
+                                    <div className='mt-6'>
+                                        <h1 className='text-xl font-bold'>Impact fiscal</h1>
+                                        <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
+                                            {kpiDataThirdLine.map((item) => (
+                                                <Card key={item.title}>
+                                                    <Flex alignItems='start'>
+                                                        <div className='truncate space-y-2'>
+                                                            <Text>{item.title}</Text>
+                                                            <Metric className='truncate'>{item.metric}</Metric>
+                                                        </div>
+                                                    </Flex>
+                                                </Card>
+                                            ))}
+                                        </Grid>
+                                    </div>
+                                )}
+                            </div>
+                        </TabPanel>
+                    ) : (
+                        <TabPanel>
+                            <Grid numItemsMd={2} numItemsLg={2} className='mt-6 gap-6'>
+                                {kpiSCPIFirstLine.map((item, index) => (
+                                    <Card key={item.title} className='flex flex-col justify-center'>
+                                        <Flex
+                                            alignItems={index === 0 ? 'start' : 'center'}
+                                            justifyContent={index === 0 ? 'start' : 'center'}
+                                        >
+                                            <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
+                                                <Text>{item.title}</Text>
+                                                <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                                            </div>
+                                        </Flex>
+                                    </Card>
+                                ))}
+                            </Grid>
+                            <Grid numItemsMd={1} numItemsLg={1} className='mt-6 gap-6'>
+                                {kpiSCPISecondLine.map((item, index) => (
+                                    <Card key={item.title} className='flex flex-col justify-center'>
+                                        <Flex
+                                            alignItems={index === 0 ? 'start' : 'center'}
+                                            justifyContent={index === 0 ? 'start' : 'center'}
+                                        >
+                                            <div className={`truncate space-y-2 ${index === 1 && 'text-center'}`}>
+                                                <Text>{item.title}</Text>
+                                                <Metric className='truncate text-5xl'>{item.metric}</Metric>
+                                            </div>
+                                        </Flex>
+                                    </Card>
+                                ))}
+                            </Grid>
+                            <div className='mt-6'>
+                                <Card>
+                                    <>
+                                        <div className='md:flex justify-between'>
+                                            <div>
+                                                <Flex className='space-x-0.5' justifyContent='start' alignItems='center'>
+                                                    <Title> Performance </Title>
+                                                    <Icon
+                                                        icon={InformationCircleIcon}
+                                                        variant='simple'
+                                                        tooltip='Performances non garanties'
+                                                    />
+                                                </Flex>
+                                            </div>
+                                        </div>
+                                        {/* web */}
+                                        <div className='mt-8 hidden sm:block'>
+                                            <BarChart {...scpiAreaChartArgs} showLegend={true} stack={true} />
+                                        </div>
+                                        {/* mobile */}
+                                        <div className='mt-8 sm:hidden'>
+                                            <AreaChart {...scpiAreaChartArgs} startEndOnly={true} showGradient={false} showYAxis={false} />
+                                        </div>
+                                    </>
+                                </Card>
+                            </div>
+                        </TabPanel>
+                    )}
                 </TabPanels>
             </TabGroup>
         </main>

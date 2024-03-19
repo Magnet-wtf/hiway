@@ -27,7 +27,21 @@ export function Simulator() {
 
     const [interest, setInterest] = useState(3);
 
-    const [type, setType] = useState<'per' | 'vie'>('per');
+    const [type, setType] = useState<'per' | 'vie' | 'scpi'>('per');
+
+    const [year1, setYear1] = useState(0);
+    const [year2, setYear2] = useState(0);
+    const [year3, setYear3] = useState(0);
+    const [year4, setYear4] = useState(0);
+    const [year5, setYear5] = useState(0);
+    const [year6, setYear6] = useState(0);
+    const [year7, setYear7] = useState(0);
+    const [year8, setYear8] = useState(0);
+    const [year9, setYear9] = useState(0);
+    const [year10, setYear10] = useState(0);
+
+    const [inputtedTMI, setInputtedTMI] = useState(0);
+    const [inputtedRentability, setInputtedRentability] = useState(0);
 
     const lifeExpectancy = 79.3;
     const yearsofInvestment = type === 'per' ? 67 - age[0] : age[0];
@@ -108,88 +122,90 @@ export function Simulator() {
     return (
         <div className='w-full grid grid-cols-4 space-x-4'>
             <div className='col-span-1 space-y-4 grid grid-cols-1 grid-rows-8'>
-                <Card className='col-span-1 row-span-1'>
-                    <CardHeader>
-                        <CardTitle className='flex'>
-                            <Lightbulb className='h-6 w-6 mr-2' />
-                            Mon projet
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-8'>
-                        <div className='space-y-4'>
-                            <div className='flex items-center justify-between w-full'>
-                                <h2>{type === 'per' ? 'Mon âge' : "Temps d'investissement"}</h2>
-                                <h2>{age} ans</h2>
-                            </div>
-                            <Slider
-                                defaultValue={type === 'per' ? [25] : [15]}
-                                max={type === 'per' ? 66 : 20}
-                                min={type === 'per' ? 18 : 0}
-                                step={1}
-                                value={age}
-                                onValueChange={(value) => setAge(value)}
-                            />
-                        </div>
-                        <div className='space-y-4'>
-                            <div className='flex items-center justify-between w-full'>
-                                <h2>Premier versement</h2>
-                                <h2>{firstPayment} €</h2>
-                            </div>
-                            <Slider
-                                defaultValue={[2000]}
-                                max={50000}
-                                min={type === 'per' ? 500 : 0}
-                                step={500}
-                                value={firstPayment}
-                                onValueChange={(value) => setFirstPayment(value)}
-                            />
-                        </div>
-                        <div className='space-y-4'>
-                            <div className='flex items-center justify-between w-full'>
-                                <h2>Versement mensuel</h2>
-                                <h2>{monthlyPayment} € / mois</h2>
-                            </div>
-                            <Slider
-                                defaultValue={[100]}
-                                max={type === 'per' ? 2500 : 2000}
-                                min={50}
-                                step={50}
-                                value={monthlyPayment}
-                                onValueChange={(value) => setMonthlyPayment(value)}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className='col-span-1 row-span-1'>
-                    <CardHeader>
-                        <CardTitle className='flex'>
-                            <Rocket className='h-6 w-6 mr-2' />
-                            Mon objectif
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-8'>
-                        <div className='space-y-4'>
-                            <div className='flex items-center justify-between w-full'>
-                                <h2>Montant</h2>
-                                <h2>
-                                    {new Intl.NumberFormat('de-DE', {
-                                        style: 'currency',
-                                        currency: 'EUR',
-                                        maximumFractionDigits: 0,
-                                    }).format(goal[0])}
-                                </h2>
-                            </div>
-                            <Slider
-                                defaultValue={[10000000]}
-                                max={1500000}
-                                min={100000}
-                                step={100000}
-                                value={goal}
-                                onValueChange={(value) => setGoal(value)}
-                            />
-                        </div>
-                        {/* TODO: Add a 3 step stepper */}
-                        {/* <Slider
+                {type !== 'scpi' ? (
+                    <>
+                        <Card className='col-span-1 row-span-1'>
+                            <CardHeader>
+                                <CardTitle className='flex'>
+                                    <Lightbulb className='h-6 w-6 mr-2' />
+                                    Mon projet
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='space-y-8'>
+                                <div className='space-y-4'>
+                                    <div className='flex items-center justify-between w-full'>
+                                        <h2>{type === 'per' ? 'Mon âge' : "Temps d'investissement"}</h2>
+                                        <h2>{age} ans</h2>
+                                    </div>
+                                    <Slider
+                                        defaultValue={type === 'per' ? [25] : [15]}
+                                        max={type === 'per' ? 66 : 20}
+                                        min={type === 'per' ? 18 : 0}
+                                        step={1}
+                                        value={age}
+                                        onValueChange={(value) => setAge(value)}
+                                    />
+                                </div>
+                                <div className='space-y-4'>
+                                    <div className='flex items-center justify-between w-full'>
+                                        <h2>Premier versement</h2>
+                                        <h2>{firstPayment} €</h2>
+                                    </div>
+                                    <Slider
+                                        defaultValue={[2000]}
+                                        max={50000}
+                                        min={type === 'per' ? 500 : 0}
+                                        step={500}
+                                        value={firstPayment}
+                                        onValueChange={(value) => setFirstPayment(value)}
+                                    />
+                                </div>
+                                <div className='space-y-4'>
+                                    <div className='flex items-center justify-between w-full'>
+                                        <h2>Versement mensuel</h2>
+                                        <h2>{monthlyPayment} € / mois</h2>
+                                    </div>
+                                    <Slider
+                                        defaultValue={[100]}
+                                        max={type === 'per' ? 2500 : 2000}
+                                        min={50}
+                                        step={50}
+                                        value={monthlyPayment}
+                                        onValueChange={(value) => setMonthlyPayment(value)}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className='col-span-1 row-span-1'>
+                            <CardHeader>
+                                <CardTitle className='flex'>
+                                    <Rocket className='h-6 w-6 mr-2' />
+                                    Mon objectif
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='space-y-8'>
+                                <div className='space-y-4'>
+                                    <div className='flex items-center justify-between w-full'>
+                                        <h2>Montant</h2>
+                                        <h2>
+                                            {new Intl.NumberFormat('de-DE', {
+                                                style: 'currency',
+                                                currency: 'EUR',
+                                                maximumFractionDigits: 0,
+                                            }).format(goal[0])}
+                                        </h2>
+                                    </div>
+                                    <Slider
+                                        defaultValue={[10000000]}
+                                        max={1500000}
+                                        min={100000}
+                                        step={100000}
+                                        value={goal}
+                                        onValueChange={(value) => setGoal(value)}
+                                    />
+                                </div>
+                                {/* TODO: Add a 3 step stepper */}
+                                {/* <Slider
                             defaultValue={[10000000]}
                             max={5000000}
                             min={100000}
@@ -197,55 +213,97 @@ export function Simulator() {
                             value={goal}
                             onValueChange={(value) => setGoal(value)}
                         /> */}
-                    </CardContent>
-                </Card>
-                {type === 'per' && (
-                    <Card className='col-span-1 row-span-2'>
+                            </CardContent>
+                        </Card>
+                        {type === 'per' && (
+                            <Card className='col-span-1 row-span-2'>
+                                <CardHeader>
+                                    <CardTitle className='flex'>
+                                        <Heart className='h-6 w-6 mr-2' />
+                                        Ma situation fiscale
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className='space-y-8'>
+                                    <div className='space-y-4'>
+                                        <div className='space-y-2'>
+                                            <Label>Revenu fiscal</Label>
+                                            <Input
+                                                placeholder='Revenu fiscal'
+                                                value={fiscalRevenue}
+                                                onChange={(e) => setFiscalRevenue(Number(e.target.value))}
+                                            />
+                                        </div>
+                                        <div className='w-full space-y-2'>
+                                            <Label>Situation</Label>
+                                            <Select onValueChange={(value) => setSituation(value)}>
+                                                <SelectTrigger className='w-full'>
+                                                    <SelectValue placeholder='Selectionne ta situation' />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Situation</SelectLabel>
+                                                        <SelectItem value='celibataire'>Celibataire</SelectItem>
+                                                        <SelectItem value='marier/pacse'>Marié/Pacsé</SelectItem>
+                                                        <SelectItem value='divorce'>Divorcé</SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className='space-y-2'>
+                                            <Label>Personne(s) a charge</Label>
+                                            <Input
+                                                placeholder='Personne(s) a charge'
+                                                value={peopleInCharge}
+                                                onChange={(e) => setPeopleInCharge(Number(e.target.value))}
+                                            />
+                                        </div>
+
+                                        <div className='text-2xl font-bold pt-8 flex items-center justify-center'>
+                                            Votre TMI est de
+                                            <div className='dark:bg-slate-800 bg-slate-300 rounded-xl p-4 ml-3'>{calculTMI()}%</div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </>
+                ) : (
+                    <Card className='col-span-1 row-span-1'>
                         <CardHeader>
                             <CardTitle className='flex'>
-                                <Heart className='h-6 w-6 mr-2' />
-                                Ma situation fiscale
+                                <Lightbulb className='h-6 w-6 mr-2' />
+                                Mon projet
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className='space-y-8'>
+                        <CardContent className='space-y-8 mt-8'>
                             <div className='space-y-4'>
-                                <div className='space-y-2'>
-                                    <Label>Revenu fiscal</Label>
-                                    <Input
-                                        placeholder='Revenu fiscal'
-                                        value={fiscalRevenue}
-                                        onChange={(e) => setFiscalRevenue(Number(e.target.value))}
-                                    />
-                                </div>
-                                <div className='w-full space-y-2'>
-                                    <Label>Situation</Label>
-                                    <Select onValueChange={(value) => setSituation(value)}>
-                                        <SelectTrigger className='w-full'>
-                                            <SelectValue placeholder='Selectionne ta situation' />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Situation</SelectLabel>
-                                                <SelectItem value='celibataire'>Celibataire</SelectItem>
-                                                <SelectItem value='marier/pacse'>Marié/Pacsé</SelectItem>
-                                                <SelectItem value='divorce'>Divorcé</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                <div className='flex flex-col items-start justify-between w-full space-y-2'>
+                                    <Label>TMI</Label>
+                                    <Input placeholder='TMI' value={inputtedTMI} onChange={(e) => setInputtedTMI(Number(e.target.value))} />
                                 </div>
 
-                                <div className='space-y-2'>
-                                    <Label>Personne(s) a charge</Label>
+                                <div className='flex flex-col items-start justify-between w-full space-y-2'>
+                                    <Label>Rentabilité</Label>
                                     <Input
-                                        placeholder='Personne(s) a charge'
-                                        value={peopleInCharge}
-                                        onChange={(e) => setPeopleInCharge(Number(e.target.value))}
+                                        placeholder='Rentabilité'
+                                        value={inputtedRentability}
+                                        onChange={(e) => setInputtedRentability(Number(e.target.value))}
                                     />
                                 </div>
 
-                                <div className='text-2xl font-bold pt-8 flex items-center justify-center'>
-                                    Votre TMI est de
-                                    <div className='dark:bg-slate-800 bg-slate-300 rounded-xl p-4 ml-3'>{calculTMI()}%</div>
+                                <div className='flex flex-col items-start justify-between w-full space-y-2 pt-8'>
+                                    <Label>Investissement annuel</Label>
+                                    <Input placeholder='Année 1' value={year1} onChange={(e) => setYear1(Number(e.target.value))} />
+                                    <Input placeholder='Année 2' value={year2} onChange={(e) => setYear2(Number(e.target.value))} />
+                                    <Input placeholder='Année 3' value={year3} onChange={(e) => setYear3(Number(e.target.value))} />
+                                    <Input placeholder='Année 4' value={year4} onChange={(e) => setYear4(Number(e.target.value))} />
+                                    <Input placeholder='Année 5' value={year5} onChange={(e) => setYear5(Number(e.target.value))} />
+                                    <Input placeholder='Année 6' value={year6} onChange={(e) => setYear6(Number(e.target.value))} />
+                                    <Input placeholder='Année 7' value={year7} onChange={(e) => setYear7(Number(e.target.value))} />
+                                    <Input placeholder='Année 8' value={year8} onChange={(e) => setYear8(Number(e.target.value))} />
+                                    <Input placeholder='Année 9' value={year9} onChange={(e) => setYear9(Number(e.target.value))} />
+                                    <Input placeholder='Année 10' value={year10} onChange={(e) => setYear10(Number(e.target.value))} />
                                 </div>
                             </div>
                         </CardContent>
@@ -262,6 +320,7 @@ export function Simulator() {
                                 <TabsList>
                                     <TabsTrigger value='per'>PER</TabsTrigger>
                                     <TabsTrigger value='vie'>Assurance Vie</TabsTrigger>
+                                    <TabsTrigger value='scpi'>SCPI</TabsTrigger>
                                 </TabsList>
                             </Tabs>
                         </div>
@@ -292,6 +351,18 @@ export function Simulator() {
                         interest={interest}
                         tmi={calculTMI() || 0}
                         type={type}
+                        inputtedTMI={inputtedTMI}
+                        inputtedRentability={inputtedRentability}
+                        year1={year1}
+                        year2={year2}
+                        year3={year3}
+                        year4={year4}
+                        year5={year5}
+                        year6={year6}
+                        year7={year7}
+                        year8={year8}
+                        year9={year9}
+                        year10={year10}
                     />
                 </CardContent>
             </Card>
